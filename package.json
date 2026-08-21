@@ -1,0 +1,116 @@
+{
+  "name": "nativephp-edge-tools",
+  "displayName": "NativePHP EDGE Tools",
+  "description": "Project-aware autocomplete, icon completion, hover docs, diagnostics, syntax highlighting and Blade-safe formatting for NativePHP v4 EDGE.",
+  "version": "0.5.0",
+  "publisher": "Nopticon",
+  "license": "SEE LICENSE IN LICENSE",
+  "icon": "icon.png",
+  "engines": {
+    "vscode": "^1.90.0"
+  },
+  "categories": [
+    "Programming Languages",
+    "Formatters",
+    "Linters",
+    "Snippets",
+    "Other"
+  ],
+  "keywords": [
+    "nativephp",
+    "edge",
+    "laravel",
+    "blade",
+    "php",
+    "mobile",
+    "ios",
+    "android",
+    "swiftui",
+    "compose",
+    "autocomplete",
+    "intellisense",
+    "formatter"
+  ],
+  "activationEvents": [
+    "onLanguage:blade",
+    "onLanguage:php"
+  ],
+  "main": "./extension.js",
+  "contributes": {
+    "languages": [
+      {
+        "id": "blade",
+        "aliases": [
+          "Blade",
+          "blade"
+        ],
+        "extensions": [
+          ".blade.php"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "commands": [
+      {
+        "command": "nativephpEdge.formatDocument",
+        "title": "NativePHP EDGE: Format Document"
+      },
+      {
+        "command": "nativephpEdge.refreshIcons",
+        "title": "NativePHP EDGE: Refresh Project Icon Catalog"
+      }
+    ],
+    "configuration": {
+      "title": "NativePHP EDGE Tools",
+      "properties": {
+        "nativephpEdge.format.indentSize": {
+          "type": "number",
+          "default": 4,
+          "minimum": 2,
+          "maximum": 8,
+          "description": "Indent size used by the NativePHP EDGE formatter."
+        },
+        "nativephpEdge.completion.tailwindLikeClasses": {
+          "type": "boolean",
+          "default": true,
+          "description": "Suggest commonly supported EDGE utility classes inside class attributes."
+        },
+        "nativephpEdge.icons.generatedPath": {
+          "type": "string",
+          "default": "app/Icons",
+          "description": "Workspace-relative path containing NativePHP generated Ios.php, Android.php and AndroidOutlined.php icon enums."
+        }
+      }
+    },
+    "grammars": [
+      {
+        "language": "blade",
+        "scopeName": "text.html.nativephp-edge",
+        "path": "./syntaxes/nativephp-edge.tmLanguage.json",
+        "injectTo": [
+          "text.html.php",
+          "text.html.blade"
+        ]
+      }
+    ]
+  },
+  "scripts": {
+    "package": "npx @vscode/vsce package"
+  },
+  "devDependencies": {
+    "@vscode/vsce": "^3.2.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nopticon/nativephp-edge-tools.git"
+  },
+  "bugs": {
+    "url": "https://github.com/nopticon/nativephp-edge-tools/issues"
+  },
+  "homepage": "https://github.com/nopticon/nativephp-edge-tools#readme",
+  "pricing": "Free",
+  "galleryBanner": {
+    "color": "#172D46",
+    "theme": "dark"
+  }
+}
