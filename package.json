@@ -2,7 +2,7 @@
   "name": "nativephp-edge-tools",
   "displayName": "NativePHP EDGE Tools",
   "description": "Project-aware autocomplete with per-component props/events docs, icon completion, diagnostics, syntax highlighting and Blade-safe formatting for NativePHP v4 EDGE.",
-  "version": "0.6.0",
+  "version": "1.0.0",
   "publisher": "Nopticon",
   "license": "SEE LICENSE IN LICENSE",
   "icon": "icon.png",

@@ -1,83 +1,35 @@
 # Changelog
 
-## 0.6.0
+## 1.0.0
 
 ### Added
-- Per-component IntelliSense metadata separated into **Props**, **Events**, **Bindings**, **Children**, **Notes**, and inherited **Shared EDGE capabilities**.
-- Component hover cards now show only the props and events that belong to that individual component, with shared EDGE props/events displayed separately.
-- Attribute hover now identifies whether the item is a component-specific prop, event, binding, or inherited shared EDGE capability.
-- Per-component children/usage notes for every bundled EDGE component.
+
+- Component-specific EDGE API metadata with separate props, events, bindings, children, notes, and shared capabilities.
+- Project-aware NativePHP v4 icon completion using generated iOS and Android icon enums and installed NativePHP icon definitions.
+- Typed enum-case completion for `Ios::`, `Android::`, and `AndroidOutlined::` icon bindings.
+- Hover documentation for EDGE components and attributes.
+- Diagnostics for invalid EDGE components, attributes, and component-specific events.
+- Blade-safe document formatting.
+- NativePHP EDGE syntax highlighting.
+- Marketplace-ready metadata, support documentation, repository links, and SE branding.
 
 ### Changed
-- Attribute completion labels now identify each suggestion as a prop, event, binding, or shared capability instead of a generic attribute.
-- Diagnostics now validate EDGE event attributes such as `@change` and `@dismiss` against the selected component instead of allowing every `@...` attribute automatically.
-- Component documentation is structured for faster scanning in VS Code IntelliSense.
+
+- Promoted NativePHP EDGE Tools to the first stable release.
+- Improved component-aware autocomplete, icon discovery, diagnostics, and IntelliSense organization.
 
 ## 0.5.0
 
 ### Added
+
 - Project-aware NativePHP v4 icon discovery.
-- Reads generated `App\Icons\Ios`, `App\Icons\Android`, and `App\Icons\AndroidOutlined` enums from the current workspace.
-- Reads shared icon aliases from the installed `vendor/nativephp/mobile-ui` / `vendor/nativephp/mobile` package when available.
-- Typed enum-case completion for bindings such as `:ios="Ios::..."`, `:android="Android::..."`, and `:android="AndroidOutlined::..."`.
+- Generated `App\\Icons\\Ios`, `App\\Icons\\Android`, and `App\\Icons\\AndroidOutlined` enum support.
+- Shared icon discovery from installed NativePHP packages.
+- Typed icon enum completion.
 - `NativePHP EDGE: Refresh Project Icon Catalog` command.
-- `nativephpEdge.icons.generatedPath` setting for projects that generate icons outside `app/Icons`.
+- `nativephpEdge.icons.generatedPath` configuration setting.
 
 ### Changed
-- String icon completion now prefers definitions discovered in the installed NativePHP project, with bundled fallbacks only when needed.
-- Icon completion details show when values came from the current project.
-- Marketplace metadata and documentation were polished for public release.
-- Added explicit free pricing, gallery banner metadata, support documentation, and repository-focused README cleanup.
 
-## 0.4.1
-
-### Fixed
-
-- Fixed icon value IntelliSense for `<native:icon name="...">`.
-- Icon suggestions now take precedence over generic attribute suggestions while the cursor is inside `name`, `ios`, `android`, and supported icon-valued attributes.
-- Typing a partial icon name now filters the NativePHP icon completion list correctly.
-
-## 0.4.0
-
-### Added
-- NativePHP EDGE syntax highlighting for `native:*` component tags.
-- Dedicated syntax scopes for EDGE component names.
-- Highlighting for Blade-style event attributes such as `@press` and `@change`.
-- Highlighting for bound attributes such as `:size`, `:ios`, and `:android`.
-- Highlighting for `native:*` attributes.
-- Highlighting for accessibility attributes such as `a11y-label`.
-- Theme-aware syntax coloring that follows the user's active VS Code color theme.
-
-### Retained
-- NativePHP v4 EDGE component and attribute completion.
-- Cross-platform, iOS SF Symbol, and Android Material Icon completion.
-- Hover documentation for EDGE components and common attributes.
-- Diagnostics for unknown EDGE components and undocumented attributes.
-- Blade-safe document formatting.
-
-## 0.3.0
-
-### Added
-- NativePHP cross-platform icon completion.
-- iOS SF Symbol and Android Material Icon suggestions for platform-specific icon attributes.
-- Hover documentation for components and common attributes.
-- Diagnostics for unknown EDGE components and undocumented attributes.
-- Marketplace-ready README metadata and extension icon.
-- MIT license.
-
-### Changed
-- Improved formatter behavior to preserve PHP, Blade `@verbatim`, `<script>`, and `<style>` blocks.
-
-## 0.2.0
-
-### Added
-- Expanded autocomplete coverage for documented NativePHP v4 EDGE components.
-- Expanded component-specific and shared EDGE attribute completion.
-
-## 0.1.0
-
-### Added
-- Initial NativePHP EDGE component autocomplete prototype.
-- Initial EDGE attribute autocomplete.
-- Initial EDGE utility-class suggestions.
-- Initial Blade/EDGE document formatter.
+- Icon completion prefers definitions from the current NativePHP project with bundled fallbacks when necessary.
+- Marketplace metadata and documentation prepared for public release.
