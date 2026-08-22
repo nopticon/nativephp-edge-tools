@@ -4,6 +4,8 @@ VS Code tooling for **NativePHP Mobile v4 EDGE** Blade components.
 
 ## Features
 
+- **Per-component API reference** — hover each `<native:...>` component to see its own Props, Events, Bindings, Children, Notes, and inherited shared EDGE capabilities as separate sections.
+
 ### EDGE component completion
 
 Type:
@@ -97,6 +99,25 @@ Open a Laravel Blade file and type:
 Use `Ctrl+Space` / `Control+Space` to manually trigger completion when needed.
 
 For formatting, use VS Code's **Format Document** command or run **NativePHP EDGE: Format Document** from the Command Palette.
+
+### Per-component props and events
+
+Hover a component such as:
+
+```blade
+<native:modal :visible="$showModal" @dismiss="closeModal">
+```
+
+The hover panel separates the component API into:
+
+- **Props** — props specific to that EDGE component.
+- **Events** — events emitted/handled by that component.
+- **Bindings** — e.g. `native:model` where supported.
+- **Children** — expected/natural child EDGE components.
+- **Notes** — component-specific behavior and constraints.
+- **Shared EDGE capabilities** — inherited layout/style props and shared gesture events.
+
+Attribute completion uses the same classification, so `@dismiss` is shown as an event while `visible` is shown as a prop.
 
 ## Configuration
 

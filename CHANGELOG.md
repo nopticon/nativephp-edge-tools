@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.6.0
+
+### Added
+- Per-component IntelliSense metadata separated into **Props**, **Events**, **Bindings**, **Children**, **Notes**, and inherited **Shared EDGE capabilities**.
+- Component hover cards now show only the props and events that belong to that individual component, with shared EDGE props/events displayed separately.
+- Attribute hover now identifies whether the item is a component-specific prop, event, binding, or inherited shared EDGE capability.
+- Per-component children/usage notes for every bundled EDGE component.
+
+### Changed
+- Attribute completion labels now identify each suggestion as a prop, event, binding, or shared capability instead of a generic attribute.
+- Diagnostics now validate EDGE event attributes such as `@change` and `@dismiss` against the selected component instead of allowing every `@...` attribute automatically.
+- Component documentation is structured for faster scanning in VS Code IntelliSense.
+
 ## 0.5.0
 
 ### Added

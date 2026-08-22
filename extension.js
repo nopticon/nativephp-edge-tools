@@ -1567,6 +1567,92 @@ const CLASSES = ["w-full", "h-full", "flex-1", "fill", "relative", "absolute", "
   ...[0,1,2,3,4,5,6,7,8,9,10,11,12].flatMap(n => ["p-","px-","py-","pt-","pr-","pb-","pl-","m-","mx-","my-","mt-","mr-","mb-","ml-","gap-"].map(x => x+n))
 ];
 
+const SHARED_EVENTS = SHARED.filter(a => a.startsWith('@'));
+const SHARED_PROPS = SHARED.filter(a => !a.startsWith('@'));
+
+// Component-specific documentation is intentionally separated into props,
+// events, bindings, shared capabilities and notes. This keeps IntelliSense
+// precise instead of presenting every attribute as one flat list.
+const COMPONENT_OTHER_INFO = {
+  "accordion": { children: "Use <native:accordion-header> and <native:accordion-content> as children.", notes: "expanded controls the disclosure state; @change reports user-driven state changes." },
+  "accordion-header": { children: "Header content for a parent <native:accordion>.", notes: "Intended to be nested inside <native:accordion>." },
+  "accordion-content": { children: "Accepts EDGE content displayed when the parent accordion is expanded.", notes: "Intended to be nested inside <native:accordion>." },
+  "activity-indicator": { children: "No child content is required.", notes: "Native indeterminate activity/loading indicator." },
+  "badge": { children: "Usually rendered as a leaf component.", notes: "Use count or label depending on the badge content." },
+  "bottom-nav": { children: "Use <native:bottom-nav-item> children.", notes: "Container for native bottom navigation." },
+  "bottom-nav-item": { children: "Leaf navigation item.", notes: "label is required by NativePHP EDGE runtime validation." },
+  "bottom-sheet": { children: "Accepts any EDGE elements as sheet content.", notes: "Keep visible state synchronized in @dismiss." },
+  "button": { children: "May use text slot content when label is omitted.", notes: "Native semantic button styling intentionally ignores several per-instance visual style overrides." },
+  "button-group": { children: "Options are normally supplied through the options prop.", notes: "Can participate in native:model two-way binding." },
+  "canvas": { children: "Canvas drawing children/directives depend on the NativePHP UI implementation.", notes: "Inherits shared layout, style and gesture capabilities." },
+  "carousel": { children: "Accepts EDGE elements as carousel items.", notes: "item-width and item-spacing control item presentation." },
+  "checkbox": { children: "Leaf form control.", notes: "Supports native:model and @change for state synchronization." },
+  "chip": { children: "Usually rendered as a leaf component.", notes: "Supports selected state, icons and native:model binding." },
+  "column": { children: "Accepts any EDGE elements.", notes: "Vertical native layout container." },
+  "divider": { children: "Leaf visual separator.", notes: "Use orientation/style props supported by the installed NativePHP version." },
+  "fab": { children: "Leaf floating action button.", notes: "Designed for a prominent native action." },
+  "gesture-area": { children: "Accepts EDGE content that participates in gesture handling.", notes: "Gesture-specific events are component specific in addition to shared EDGE gestures." },
+  "icon": { children: "Leaf icon component.", notes: "name uses NativePHP shared aliases; ios and android can override with platform-specific icon names or generated enums." },
+  "image": { children: "Leaf image component.", notes: "Supports local/remote sources according to the installed NativePHP version." },
+  "lazy-grid": { children: "Accepts EDGE elements as grid items.", notes: "Lazy native grid intended for larger collections." },
+  "list": { children: "Commonly contains <native:list-item> or <native:list-section> children; arbitrary EDGE children are also supported.", notes: "Supports refresh/end-reached behavior and list presentation options." },
+  "list-item": { children: "Leaf/row-oriented component with leading/trailing content configured by props.", notes: "Supports row interaction and state-change callbacks." },
+  "list-section": { children: "Contains <native:list-item> or other list row content.", notes: "Section presentation is affected by the parent list's plain/grouped behavior." },
+  "modal": { children: "Accepts any EDGE elements as modal content.", notes: "visible is required; keep visible state synchronized in @dismiss." },
+  "pressable": { children: "Accepts any EDGE elements.", notes: "Use when you need a fully custom tappable layout rather than native button chrome." },
+  "progress-bar": { children: "Leaf progress component.", notes: "Can render determinate value or indeterminate progress." },
+  "radio-group": { children: "Use <native:radio> children.", notes: "Owns the selected value and emits @change." },
+  "radio": { children: "Leaf option inside a <native:radio-group>.", notes: "value identifies the option." },
+  "refreshable": { children: "Wrap EDGE content that should support pull-to-refresh.", notes: "on-refresh names the refresh handler." },
+  "row": { children: "Accepts any EDGE elements.", notes: "Horizontal native layout container." },
+  "scroll-view": { children: "Accepts any EDGE elements.", notes: "Scrollable container with axis/indicator options." },
+  "select": { children: "Options are normally supplied through props.", notes: "Supports native:model and @change." },
+  "rect": { children: "Shape component; typically leaf content.", notes: "Useful inside stack/canvas-style compositions." },
+  "circle": { children: "Shape component; typically leaf content.", notes: "Useful inside stack/canvas-style compositions." },
+  "line": { children: "Shape component; typically leaf content.", notes: "Useful inside stack/canvas-style compositions." },
+  "side-nav": { children: "Use side-nav header, group and item components.", notes: "Native side navigation container." },
+  "side-nav-header": { children: "Header for a parent side navigation.", notes: "Intended to be nested inside <native:side-nav>." },
+  "side-nav-item": { children: "Leaf navigation item.", notes: "Supports URL/browser navigation and badge state." },
+  "side-nav-group": { children: "Contains side-nav items/groups.", notes: "heading and expanded control grouped navigation presentation." },
+  "slider": { children: "Leaf form control.", notes: "Supports native:model and @change with min/max/step constraints." },
+  "spacer": { children: "No child content required.", notes: "Flexible/explicit spacing element for native layouts." },
+  "stack": { children: "Accepts any EDGE elements.", notes: "Overlays children in the same native layout region." },
+  "tab-row": { children: "Use <native:tab> children.", notes: "Owns selected tab state and supports native:model/@change." },
+  "tab": { children: "Leaf tab item.", notes: "Supports label and platform-aware icon props." },
+  "text": { children: "Text may be provided as slot content.", notes: "Native typography component with truncation/line options." },
+  "text-input": { children: "Leaf form control.", notes: "Base native text input; supports two-way binding and input events." },
+  "outlined-text-input": { children: "Leaf form control.", notes: "Outlined visual treatment for native text input." },
+  "filled-text-input": { children: "Leaf form control.", notes: "Filled visual treatment for native text input." },
+  "bare-text-input": { children: "Leaf form control.", notes: "Minimal native text input without standard field chrome." },
+  "toggle": { children: "Leaf form control.", notes: "Boolean native control supporting native:model and @change." },
+  "top-bar": { children: "Use <native:top-bar-action> for actions where supported.", notes: "Native navigation/title bar with display and scroll behavior." },
+  "top-bar-action": { children: "Leaf action item.", notes: "Designed to be nested in a <native:top-bar>." },
+  "virtual-list": { children: "Virtualized collection content is driven by its list/item configuration.", notes: "Intended for efficient rendering of larger data sets." },
+  "webview": { children: "Slot content can provide inline HTML when html is not explicitly supplied.", notes: "javascript and DOM storage are opt-in; php mode serves content from the embedded Laravel runtime." },
+  "web-view": { children: "Alias behavior follows <native:webview>.", notes: "Alias of webview." }
+};
+
+function componentMeta(name) {
+  const all = [...new Set(COMPONENTS[name] || [])];
+  const own = all.filter(a => !SHARED.includes(a));
+  return {
+    props: own.filter(a => !a.startsWith('@') && a !== 'native:model'),
+    events: own.filter(a => a.startsWith('@')),
+    bindings: own.filter(a => a === 'native:model'),
+    sharedProps: SHARED_PROPS,
+    sharedEvents: SHARED_EVENTS,
+    other: COMPONENT_OTHER_INFO[name] || { notes: 'NativePHP v4 EDGE component.' }
+  };
+}
+
+function attrKind(component, attr) {
+  const meta = componentMeta(component);
+  if (meta.events.includes(attr) || meta.sharedEvents.includes(attr)) return 'event';
+  if (meta.bindings.includes(attr)) return 'binding';
+  if (meta.props.includes(attr) || meta.sharedProps.includes(attr)) return 'prop';
+  return 'attribute';
+}
+
 const COMPONENT_DOCS = {
   "icon": "Displays a platform-native icon. Shared names map to SF Symbols on iOS and Material Icons on Android.",
   "button": "A native button with semantic variants, sizes, optional leading/trailing icons, loading and accessibility props.",
@@ -1610,7 +1696,50 @@ function prefix(document, position) { return document.lineAt(position.line).text
 function normalizeAttr(a) { return a.startsWith(':') ? a.slice(1) : a; }
 function boolAttr(a) { return ['center','fill','safe-area','hidden','disabled','selected','visible','dark','custom','horizontal','separator','plain','back','show-navigation-icon','dismissible','loading','indeterminate','javascript','js','dom-storage','domStorage','php','fullscreen','secure','multiline','read-only','is-error','keep-focus-on-submit','open-in-browser','active','expanded','pinned','show-close-button','gestures-enabled','news','destructive'].includes(a); }
 function componentUrl(name){ return `https://nativephp.com/docs/mobile/4/edge-components/${name === 'web-view' ? 'webview' : name}`; }
-function markdownComponent(name){ const md = new vscode.MarkdownString(); md.isTrusted = true; md.appendMarkdown(`### \`<native:${name}>\`\n\n${COMPONENT_DOCS[name] || 'NativePHP v4 EDGE component.'}\n\n`); md.appendMarkdown(`[NativePHP documentation](${componentUrl(name)})`); return md; }
+function markdownComponent(name){
+  const md = new vscode.MarkdownString(); md.isTrusted = true;
+  const meta = componentMeta(name);
+  md.appendMarkdown(`### \`<native:${name}>\`
+
+${COMPONENT_DOCS[name] || 'NativePHP v4 EDGE component.'}
+
+`);
+  md.appendMarkdown(`**Props**
+
+${meta.props.length ? meta.props.map(p => `\`${p}\``).join(', ') : '_No component-specific props._'}
+
+`);
+  md.appendMarkdown(`**Events**
+
+${meta.events.length ? meta.events.map(e => `\`${e}\``).join(', ') : '_No component-specific events._'}
+
+`);
+  if (meta.bindings.length) md.appendMarkdown(`**Bindings**
+
+${meta.bindings.map(b => `\`${b}\``).join(', ')}
+
+`);
+  if (meta.other.children) md.appendMarkdown(`**Children**
+
+${meta.other.children}
+
+`);
+  if (meta.other.notes) md.appendMarkdown(`**Notes**
+
+${meta.other.notes}
+
+`);
+  md.appendMarkdown(`<details><summary>Shared EDGE capabilities</summary>
+
+**Shared props:** ${meta.sharedProps.map(p => `\`${p}\``).join(', ')}
+
+**Shared events:** ${meta.sharedEvents.map(e => `\`${e}\``).join(', ')}
+
+</details>
+
+`);
+  md.appendMarkdown(`[NativePHP documentation](${componentUrl(name)})`); return md;
+}
 
 function getTagAt(document, position) {
   const text = document.getText(); const offset = document.offsetAt(position);
@@ -1690,8 +1819,9 @@ function completionProvider() { return { provideCompletionItems(document, positi
     const name = tag[1], attrs = [...new Set([...(COMPONENTS[name] || []), ...SHARED])];
     return attrs.map(a => {
       const i = new vscode.CompletionItem(a, vscode.CompletionItemKind.Property);
-      i.detail = `${name} attribute`;
-      i.documentation = new vscode.MarkdownString(ATTR_DOCS[a] || `Supported attribute on \`<native:${name}>\`.`);
+      const kind = attrKind(name, a);
+      i.detail = `${name} ${kind}`;
+      i.documentation = new vscode.MarkdownString(`**${kind.toUpperCase()}** — ${ATTR_DOCS[a] || `Supported ${kind} on \`<native:${name}>\`.`}`);
       if (boolAttr(a)) i.insertText = a;
       else i.insertText = new vscode.SnippetString(`${a}="$1"`);
       return i;
@@ -1699,10 +1829,27 @@ function completionProvider() { return { provideCompletionItems(document, positi
   }
 } }; }
 
-function hoverProvider(){ return { provideHover(document, position){ if(!isBlade(document)) return; const range=document.getWordRangeAtPosition(position,/[@:\w-]+/); if(!range) return; const word=document.getText(range); const line=document.lineAt(position.line).text; const before=line.slice(0,position.character+1); const comp=before.match(/<\/?native:([\w-]+)/) || line.match(/<\/?native:([\w-]+)/); if(word.startsWith('native:')){const n=word.slice(7);if(COMPONENTS[n])return new vscode.Hover(markdownComponent(n),range);} if(comp && COMPONENTS[comp[1]]){ const attr=normalizeAttr(word); if((COMPONENTS[comp[1]]||[]).includes(attr)||SHARED.includes(attr)||ATTR_DOCS[attr]){const md=new vscode.MarkdownString();md.appendMarkdown(`**${attr}** — ${ATTR_DOCS[attr]||`Supported attribute on \`<native:${comp[1]}>\`.`}`);const vals=ENUM_VALUES[`${comp[1]}:${attr}`];if(vals)md.appendMarkdown(`\n\nAllowed values: ${vals.map(v=>'`'+v+'`').join(', ')}`);return new vscode.Hover(md,range);} } } }; }
+function hoverProvider(){ return { provideHover(document, position){
+  if(!isBlade(document)) return;
+  const range=document.getWordRangeAtPosition(position,/[@:\w-]+/); if(!range) return;
+  const word=document.getText(range); const line=document.lineAt(position.line).text;
+  const before=line.slice(0,position.character+1); const comp=before.match(/<\/?native:([\w-]+)/) || line.match(/<\/?native:([\w-]+)/);
+  if(word.startsWith('native:')){ const n=word.slice(7); if(COMPONENTS[n]) return new vscode.Hover(markdownComponent(n),range); }
+  if(comp && COMPONENTS[comp[1]]){
+    const name=comp[1], attr=normalizeAttr(word), meta=componentMeta(name);
+    const allowed=[...meta.props,...meta.events,...meta.bindings,...meta.sharedProps,...meta.sharedEvents];
+    if(allowed.includes(attr) || ATTR_DOCS[attr]){
+      const kind=attrKind(name,attr); const md=new vscode.MarkdownString();
+      md.appendMarkdown(`### \`${attr}\`\n\n**${kind[0].toUpperCase()+kind.slice(1)} for \`<native:${name}>\`**\n\n${ATTR_DOCS[attr]||`Supported ${kind} on this component.`}`);
+      const vals=ENUM_VALUES[`${name}:${attr}`]; if(vals) md.appendMarkdown(`\n\n**Allowed values:** ${vals.map(v=>'`'+v+'`').join(', ')}`);
+      if(meta.props.includes(attr)||meta.events.includes(attr)||meta.bindings.includes(attr)) md.appendMarkdown(`\n\n_Component-specific._`); else md.appendMarkdown(`\n\n_Inherited shared EDGE ${kind}._`);
+      return new vscode.Hover(md,range);
+    }
+  }
+} }; }
 
 function parseAttributes(raw){ const attrs=[]; const re=/\s([:@]?[A-Za-z_][\w:.-]*)(?:\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+))?/g; let m; while((m=re.exec(raw))) attrs.push({name:m[1], index:m.index+1}); return attrs; }
-function diagnosticsFor(document){ const diagnostics=[]; const text=document.getText(); const tagRe=/<native:([\w-]+)\b[\s\S]*?>/g; let m; while((m=tagRe.exec(text))){const name=m[1]; const start=document.positionAt(m.index+8); const compRange=new vscode.Range(start,document.positionAt(m.index+8+name.length)); if(!COMPONENTS[name]){diagnostics.push(new vscode.Diagnostic(compRange,`Unknown NativePHP EDGE component <native:${name}>.`,vscode.DiagnosticSeverity.Error));continue;} const allowed=new Set([...(COMPONENTS[name]||[]),...SHARED]); for(const a of parseAttributes(m[0])){let attr=normalizeAttr(a.name); if(attr.startsWith('@')||attr.startsWith('wire:')||attr.startsWith('x-')||attr==='native:model'||attr==='key'||attr==='id'||attr==='style') continue; if(!allowed.has(attr)){const offset=m.index+a.index; diagnostics.push(new vscode.Diagnostic(new vscode.Range(document.positionAt(offset),document.positionAt(offset+a.name.length)),`Attribute '${a.name}' is not documented for <native:${name}>.`,vscode.DiagnosticSeverity.Warning));}} } return diagnostics; }
+function diagnosticsFor(document){ const diagnostics=[]; const text=document.getText(); const tagRe=/<native:([\w-]+)\b[\s\S]*?>/g; let m; while((m=tagRe.exec(text))){const name=m[1]; const start=document.positionAt(m.index+8); const compRange=new vscode.Range(start,document.positionAt(m.index+8+name.length)); if(!COMPONENTS[name]){diagnostics.push(new vscode.Diagnostic(compRange,`Unknown NativePHP EDGE component <native:${name}>.`,vscode.DiagnosticSeverity.Error));continue;} const allowed=new Set([...(COMPONENTS[name]||[]),...SHARED]); for(const a of parseAttributes(m[0])){let attr=normalizeAttr(a.name); if(attr.startsWith('wire:')||attr.startsWith('x-')||attr==='key'||attr==='id'||attr==='style') continue; if(!allowed.has(attr)){const offset=m.index+a.index; diagnostics.push(new vscode.Diagnostic(new vscode.Range(document.positionAt(offset),document.positionAt(offset+a.name.length)),`Attribute '${a.name}' is not documented for <native:${name}>.`,vscode.DiagnosticSeverity.Warning));}} } return diagnostics; }
 
 function countNativeOpen(line){ return (line.match(/<native:[\w-]+\b/g)||[]).length - (line.match(/<native:[^>]*\/>/g)||[]).length - (line.match(/<native:[\w-]+\b[^>]*>[^<]*<\/native:[\w-]+>/g)||[]).length; }
 function countNativeClose(line){ return (line.match(/<\/native:[\w-]+\s*>/g)||[]).length; }
